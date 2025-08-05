@@ -18,6 +18,7 @@ builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IAuthTokenService<AuthorizedUser>, AuthTokenService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IShiftService, ShiftService>();
+builder.Services.AddScoped<IReportsService, ReportsService>();
 
 var app = builder.Build();
 

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace DotNetTest.Models
 {
     public class Shift
@@ -6,6 +8,7 @@ namespace DotNetTest.Models
         public string Comment { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.PENDING;
         public Job Job { get; set; }
         public User User { get; set; }

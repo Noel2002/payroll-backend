@@ -46,13 +46,30 @@ public class ShiftService : IShiftService
         return shift;
     }
 
-    public IEnumerable<Shift> GetShifts()
+    public IEnumerable<Shift> GetShifts(ShiftFilter? filter)
     {
-        return _context.Shifts.Include(shift => shift.Job).Include(shift => shift.User);
+        IQueryable<Shift> query = _context.Shifts.Include(shift => shift.Job).Include(shift => shift.User);
+        if (filter != null)
+        {
+            if (filter.From.HasValue)
+            {
+                query = query.Where(shift => shift.StartTime >= filter.From.Value);
+            }
+            if (filter.To.HasValue)
+            {
+                query = query.Where(shift => shift.EndTime <= filter.To.Value);
+            }
+            if (filter.PaymentStatus.HasValue)
+            {
+                query = query.Where(shift => shift.PaymentStatus == filter.PaymentStatus.Value);
+            }
+        }
+        return query;
     }
 
     public IEnumerable<Shift> GetShiftsByJob(Guid jobId)
     {
+
         return _context.Shifts
             .Include(shift => shift.Job)
             .Where(shift => shift.Job.Id == jobId);
@@ -65,8 +82,19 @@ public class ShiftService : IShiftService
             .Where(shift => shift.User.Id == userId);
     }
 
-    public Shift UpdateShift(Guid shiftId, DateTime startTime, DateTime endTime)
+    public Shift UpdateShift(Guid id, DateTime? startTime, DateTime? endTime, string? comment, PaymentStatus? paymentStatus)
     {
-        throw new NotImplementedException();
+        Shift? shift = _context.Shifts.Find(id) ?? throw new KeyNotFoundException($"Shift with ID {id} not found.");
+
+        shift.StartTime = startTime ?? shift.StartTime;
+        shift.EndTime = endTime ?? shift.EndTime;
+        shift.Comment = comment ?? shift.Comment;
+        shift.PaymentStatus = paymentStatus ?? shift.PaymentStatus;
+
+        _context.Shifts.Update(shift);
+        _context.SaveChanges();
+
+        return shift;
     }
+   
 }

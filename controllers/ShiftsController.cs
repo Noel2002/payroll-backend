@@ -17,19 +17,19 @@ public class ShiftsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Shift>> GetShifts()
+    public ActionResult<IEnumerable<Shift>> GetShifts([FromQuery] ShiftFilter? filter)
     {
-        var shifts = _shiftService.GetShifts();
+        var shifts = _shiftService.GetShifts(filter);
         return Ok(shifts);
     }
 
     [HttpGet("{id}")]
     public ActionResult<Shift> GetShift(Guid id)
     {
-       
+
         var shift = _shiftService.GetShift(id);
         return Ok(shift);
-        
+
     }
 
     [HttpPost]
@@ -49,9 +49,23 @@ public class ShiftsController : ControllerBase
     [HttpDelete("{id}")]
     public ActionResult DeleteShift(Guid id)
     {
-        
+
         _shiftService.DeleteShift(id);
         return NoContent();
-        
+
+    }
+
+    [HttpPatch("{id}")]
+    public ActionResult<Shift> UpdateShift(Guid id, UpdateShiftDto updateShiftDto)
+    {
+        Shift updatedShift = _shiftService.UpdateShift(
+            id: id,
+            comment: updateShiftDto.Comment,
+            startTime: updateShiftDto.StartTime,
+            endTime: updateShiftDto.EndTime,
+            paymentStatus: updateShiftDto.PaymentStatus
+        );
+
+        return Ok(updatedShift);
     }
 }
